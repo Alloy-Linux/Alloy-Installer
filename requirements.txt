@@ -1,2 +1,4 @@
 PyGObject
 pygobject-stubs
+json
+os

@@ -1,0 +1,202 @@
+{
+  "English (US)": [
+    "Default",
+    "Dvorak",
+    "Dvorak (Intl)",
+    "Colemak",
+    "Colemak-DH",
+    "Workman",
+    "International (with dead keys)",
+    "Macintosh"
+  ],
+  "English (UK)": [
+    "Default",
+    "Extended",
+    "International",
+    "Dvorak",
+    "Dvorak (UK punctuation)",
+    "Colemak",
+    "Colemak-DH",
+    "Macintosh",
+    "Macintosh (Intl)"
+  ],
+  "Arabic": [
+    "Default"
+  ],
+  "Austrian German": [
+    "Default",
+    "Nodeadkeys",
+    "Macintosh"
+  ],
+  "Australian English": [
+    "Default",
+    "Dvorak",
+    "Colemak",
+    "International",
+    "Macintosh"
+  ],
+  "Azerbaijani": [
+    "Default"
+  ],
+  "Bengali": [
+    "Default"
+  ],
+  "Belgian": [
+    "Default",
+    "Nodeadkeys",
+    "OSS",
+    "Latin-9"
+  ],
+  "Bulgarian": [
+    "Default",
+    "Phonetic",
+    "BDS"
+  ],
+  "Brazilian Portuguese": [
+    "Default",
+    "Nodeadkeys",
+    "Dvorak",
+    "Colemak",
+    "Macintosh"
+  ],
+  "Canadian English": [
+    "Default",
+    "French",
+    "Multilingual"
+  ],
+  "Swiss": [
+    "Default",
+    "French",
+    "German",
+    "Nodeadkeys",
+    "Macintosh"
+  ],
+  "Chinese (Pinyin)": [
+    "Pinyin",
+    "Wubi",
+    "Cangjie",
+    "Zhuyin"
+  ],
+  "Czech": [
+    "Default",
+    "QWERTY",
+    "Dvorak",
+    "UCW"
+  ],
+  "German": [
+    "Default",
+    "Nodeadkeys",
+    "Dead acute",
+    "Neo",
+    "QWERTY",
+    "Macintosh"
+  ],
+  "Danish": [
+    "Default",
+    "Nodeadkeys",
+    "Macintosh"
+  ],
+  "Spanish": [
+    "Default",
+    "Nodeadkeys",
+    "Dead tilde",
+    "Macintosh",
+    "Dvorak"
+  ],
+  "Finnish": [
+    "Default",
+    "Nodeadkeys",
+    "Classic",
+    "Macintosh"
+  ],
+  "French": [
+    "Default",
+    "OSS",
+    "OSS (Latin-9)",
+    "Bepo",
+    "Latin-9",
+    "Macintosh",
+    "Dvorak"
+  ],
+  "Greek": [
+    "Default",
+    "Simple",
+    "Extended",
+    "Polytonic",
+    "Nodeadkeys"
+  ],
+  "Croatian": [
+    "Default",
+    "US"
+  ],
+  "Hungarian": [
+    "Default",
+    "QWERTY",
+    "Nodeadkeys"
+  ],
+  "Indonesian": [
+    "Default"
+  ],
+  "Irish": [
+    "Default",
+    "CloGaelach",
+    "Unicode Extended"
+  ],
+  "Hebrew": [
+    "Default",
+    "Biblical",
+    "Phonetic"
+  ],
+  "Indian": [
+    "Default",
+    "Bengali",
+    "Gujarati",
+    "Gurmukhi",
+    "Kannada",
+    "Malayalam",
+    "Oriya",
+    "Tamil",
+    "Telugu",
+    "Urdu (Phonetic)"
+  ],
+  "Italian": [
+    "Default",
+    "Nodeadkeys",
+    "International",
+    "US",
+    "Colemak",
+    "Macintosh"
+  ],
+  "Japanese": [
+    "Default",
+    "Kana",
+    "Macintosh",
+    "Dvorak"
+  ],
+  "Korean": [
+    "Default"
+  ],
+  "Portuguese (Portugal)": [
+    "Default",
+    "Nodeadkeys",
+    "Macintosh"
+  ],
+  "Swedish": [
+    "Default",
+    "Nodeadkeys",
+    "Macintosh"
+  ],
+  "Turkish": [
+    "Default",
+    "Turkish (F layout)",
+    "Alt-Q"
+  ],
+  "Ukrainian": [
+    "Default",
+    "Phonetic",
+    "Typewriter"
+  ],
+  "Vietnamese": [
+    "Default"
+  ]
+}

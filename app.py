@@ -1,5 +1,7 @@
 import zoneinfo
 import gi
+import json
+import os
 
 gi.require_version('Gtk', '4.0')
 from gi.repository import Gtk, GLib
@@ -7,6 +9,7 @@ from gi.repository import Gtk, GLib
 from slides import InstallerSlide
 from ui.welcome import welcome_slide
 from ui.location import location_slide
+from ui.keyboard import keyboard_slide
 from ui.placeholder import placeholder_slide
 
 
@@ -24,6 +27,13 @@ class AlloyInstaller(Gtk.Application):
         self.timezone_listbox = None
         self.timezone_search = None
         self.sidebar_buttons = {}
+
+        self.keyboard_layouts = self._load_keyboard_layouts("keyboard_layouts.json")
+        self.selected_keyboard = 'us'
+        self.keyboard_listbox = None
+        self.keyboard_search = None
+        self.selected_keyboard_display = None
+
 
     def do_activate(self):
         self.window = Gtk.ApplicationWindow(
@@ -92,8 +102,12 @@ class AlloyInstaller(Gtk.Application):
                 welcome_slide(self.content_area, self._go_to_slide)
             case InstallerSlide.LOCATION:
                 location_slide(self.content_area, self._go_to_slide, self)
+            case InstallerSlide.KEYBOARD:
+                keyboard_slide(self.content_area, self._go_to_slide, self)
             case _:
                 placeholder_slide(self.content_area, self.current_slide.name)
+
+# Time
 
     def _populate_timezones(self, timezones):
         while child := self.timezone_listbox.get_first_child():
@@ -121,6 +135,58 @@ class AlloyInstaller(Gtk.Application):
             label = row.get_child()
             self.selected_timezone = label.get_text()
             self.selected_display.set_text(self.selected_timezone)
+
+# Keyboard
+
+    def _load_keyboard_layouts(self, filename):
+        try:
+            filepath = os.path.join(os.path.dirname(__file__), filename)
+            with open(filepath, 'r', encoding='utf-8') as f:
+                return json.load(f)
+        except Exception as e:
+            print(f"Error loading keyboard layouts: {e}")
+            return {}
+
+    def _populate_keyboards(self, layouts):
+        while child := self.keyboard_listbox.get_first_child():
+            self.keyboard_listbox.remove(child)
+
+        for layout in layouts:
+            row = Gtk.ListBoxRow()
+            label = Gtk.Label(label=layout, halign=Gtk.Align.START, margin_start=10)
+            row.set_child(label)
+            self.keyboard_listbox.append(row)
+
+            if layout == self.selected_keyboard:
+                self.keyboard_listbox.select_row(row)
+
+    def _on_keyboard_search_changed(self, entry):
+        search_text = entry.get_text().lower()
+        if not search_text:
+            filtered = self.keyboard_layouts
+        else:
+            filtered = [layout for layout in self.keyboard_layouts if search_text in layout.lower()]
+        self._populate_keyboards(filtered)
+
+    def _on_keyboard_selected(self, listbox, row):
+        if row:
+            layout = row.get_child().get_label()
+            self.selected_keyboard = layout
+            self.selected_keyboard_display.set_label(layout)
+
+            variants = self.keyboard_layouts.get(layout, [])
+            store = Gtk.StringList.new(variants)
+            self.variant_dropdown.set_model(store)
+            self.variant_dropdown.set_selected(0)
+            self.selected_variant = "default"
+
+    def _on_variant_selected(self, dropdown, _):
+        model = dropdown.get_model()
+        index = dropdown.get_selected()
+        if model and index >= 0:
+            self.selected_variant = model.get_string(index)
+
+
 
     def _on_navigate(self, button, slide):
         self._go_to_slide(slide)
