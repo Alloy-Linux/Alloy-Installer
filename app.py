@@ -10,6 +10,7 @@ from slides import InstallerSlide
 from ui.welcome import welcome_slide
 from ui.location import location_slide
 from ui.keyboard import keyboard_slide
+from ui.users import users_slide
 from ui.placeholder import placeholder_slide
 
 
@@ -33,6 +34,12 @@ class AlloyInstaller(Gtk.Application):
         self.keyboard_listbox = None
         self.keyboard_search = None
         self.selected_keyboard_display = None
+
+        self.hostname = "alloy"
+        self.username = ""
+        self.user_password = ""
+        self.root_password = ""
+
 
 
     def do_activate(self):
@@ -104,6 +111,8 @@ class AlloyInstaller(Gtk.Application):
                 location_slide(self.content_area, self._go_to_slide, self)
             case InstallerSlide.KEYBOARD:
                 keyboard_slide(self.content_area, self._go_to_slide, self)
+            case InstallerSlide.USERS:
+                users_slide(self.content_area, self._go_to_slide, self)
             case _:
                 placeholder_slide(self.content_area, self.current_slide.name)
 
