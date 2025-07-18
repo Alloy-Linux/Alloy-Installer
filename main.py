@@ -1,3 +1,4 @@
+import zoneinfo
 from enum import Enum, auto
 import sys
 import gi
@@ -27,6 +28,11 @@ class AlloyInstaller(Gtk.Application):
         self.main_paned = None
         self.sidebar = None
         self.content_area = None
+        self.timezones = sorted(zoneinfo.available_timezones())
+        self.selected_timezone = "Europe/Amsterdam"
+        self.timezone_listbox = None
+        self.timezone_search = None
+        self.sidebar_buttons = {}
 
     def do_activate(self):
         self.window = Gtk.ApplicationWindow(
@@ -59,7 +65,7 @@ class AlloyInstaller(Gtk.Application):
 
         self.main_paned.set_start_child(self.sidebar)
         self.main_paned.set_end_child(self.content_area)
-        self.main_paned.set_position(200)  # Sidebar width
+        self.main_paned.set_position(200)
 
         self.window.set_child(self.main_paned)
         self._update_content()
@@ -68,21 +74,31 @@ class AlloyInstaller(Gtk.Application):
     def _build_sidebar(self):
         header = Gtk.Label(label="Alloy Installer", css_classes=['title-1'])
         self.sidebar.append(header)
+        self.sidebar_buttons = {}
+
+        button_container = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=10)
 
         for slide in InstallerSlide:
             btn = Gtk.Button(
                 label=slide.name.capitalize(),
-                halign=Gtk.Align.START,
-                css_classes=['flat'] if slide != self.current_slide else ['suggested-action']
+                halign=Gtk.Align.FILL,  # Make buttons fill horizontal space
+                hexpand=True  # Expand horizontally
             )
             btn.connect('clicked', self._on_navigate, slide)
-            self.sidebar.append(btn)
+            button_container.append(btn)
+            self.sidebar_buttons[slide] = btn
+
+        # Add button container to sidebar
+        self.sidebar.append(button_container)
+
+        # Update initial styles
+        self._update_sidebar_styles()
 
     def _update_content(self):
         while self.content_area.get_first_child():
             self.content_area.remove(self.content_area.get_first_child())
 
-        match self.current_slide: # this code is reachable, ignore pycharm
+        match self.current_slide:
             case InstallerSlide.WELCOME:
                 self._show_welcome()
             case InstallerSlide.LOCATION:
@@ -102,7 +118,7 @@ class AlloyInstaller(Gtk.Application):
         next_btn = Gtk.Button(label="Continue", css_classes=['suggested-action'])
         next_btn.connect('clicked', lambda _: self._go_to_slide(InstallerSlide.LOCATION))
 
-        box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=20)
+        box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=20, valign=Gtk.Align.CENTER)
         box.append(title)
         box.append(subtitle)
         box.append(description)
@@ -111,18 +127,83 @@ class AlloyInstaller(Gtk.Application):
         self.content_area.append(box)
 
     def _show_location(self):
-        title = Gtk.Label(label="Select Your Location", css_classes=['title-1'])
-        next_btn = Gtk.Button(label="Continue")
+        title = Gtk.Label(label="Select Your Location and Timezone", css_classes=['title-1'])
+
+        main_box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=20)
+        main_box.append(title)
+
+        search_box = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=10)
+        search_label = Gtk.Label(label="Search Timezones:")
+        search_label.set_halign(Gtk.Align.START)
+
+        self.timezone_search = Gtk.SearchEntry(placeholder_text="Type to search...")
+        self.timezone_search.set_hexpand(True)
+        self.timezone_search.connect("search-changed", self._on_search_changed)
+
+        search_box.append(search_label)
+        search_box.append(self.timezone_search)
+        main_box.append(search_box)
+
+        scrolled = Gtk.ScrolledWindow()
+        scrolled.set_min_content_height(300)
+        scrolled.set_policy(Gtk.PolicyType.NEVER, Gtk.PolicyType.AUTOMATIC)
+
+        self.timezone_listbox = Gtk.ListBox()
+        self.timezone_listbox.set_selection_mode(Gtk.SelectionMode.SINGLE)
+        self.timezone_listbox.connect("row-selected", self._on_timezone_selected)
+
+        selected_box = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=10)
+        selected_label = Gtk.Label(label="Selected Timezone:")
+        self.selected_display = Gtk.Label(label=self.selected_timezone)
+        self.selected_display.set_hexpand(True)
+        self.selected_display.set_halign(Gtk.Align.START)
+
+        selected_box.append(selected_label)
+        selected_box.append(self.selected_display)
+
+        self._populate_timezones(self.timezones)
+        scrolled.set_child(self.timezone_listbox)
+        main_box.append(scrolled)
+        main_box.append(selected_box)
+
+        btn_box = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=10)
+        back_btn = Gtk.Button(label="Back")
+        back_btn.connect('clicked', lambda _: self._go_to_slide(InstallerSlide.WELCOME))
+        next_btn = Gtk.Button(label="Continue", css_classes=['suggested-action'])
         next_btn.connect('clicked', lambda _: self._go_to_slide(InstallerSlide.KEYBOARD))
 
-        box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=20)
-        box.append(title)
-        box.append(next_btn)
-        self.content_area.append(box)
+        btn_box.append(back_btn)
+        btn_box.append(next_btn)
+        main_box.append(btn_box)
 
-    def _show_placeholder(self):
-        label = Gtk.Label(label=f"{self.current_slide.name} Screen (Not done)")
-        self.content_area.append(label)
+        self.content_area.append(main_box)
+
+    def _populate_timezones(self, timezones):
+        while child := self.timezone_listbox.get_first_child():
+            self.timezone_listbox.remove(child)
+
+        for tz in timezones:
+            row = Gtk.ListBoxRow()
+            label = Gtk.Label(label=tz, halign=Gtk.Align.START, margin_start=10)
+            row.set_child(label)
+            self.timezone_listbox.append(row)
+
+            if tz == self.selected_timezone:
+                self.timezone_listbox.select_row(row)
+
+    def _on_search_changed(self, entry):
+        search_text = entry.get_text().lower()
+        if not search_text:
+            filtered = self.timezones
+        else:
+            filtered = [tz for tz in self.timezones if search_text in tz.lower()]
+        self._populate_timezones(filtered)
+
+    def _on_timezone_selected(self, listbox, row):
+        if row is not None:
+            label = row.get_child()
+            self.selected_timezone = label.get_text()
+            self.selected_display.set_text(self.selected_timezone)
 
     def _on_navigate(self, button, slide):
         self._go_to_slide(slide)
@@ -130,15 +211,20 @@ class AlloyInstaller(Gtk.Application):
     def _go_to_slide(self, slide):
         self.current_slide = slide
         self._update_content()
-        for child in self.sidebar:
-            if isinstance(child, Gtk.Button):
-                child.set_css_classes(
-                    ['suggested-action'] if child.get_label().lower() == slide.name.lower()
-                    else ['flat']
-                )
+        self._update_sidebar_styles()
+
+    def _update_sidebar_styles(self):
+        for slide, button in self.sidebar_buttons.items():
+            if slide == self.current_slide:
+                button.add_css_class('suggested-action')
+            else:
+                button.remove_css_class('suggested-action')
+
+    def _show_placeholder(self):
+        label = Gtk.Label(label=f"Placeholder for {self.current_slide.name}")
+        self.content_area.append(label)
 
 
 if __name__ == "__main__":
     app = AlloyInstaller()
-    exit_status = app.run(sys.argv)
-    sys.exit(exit_status)
+    app.run(sys.argv)
