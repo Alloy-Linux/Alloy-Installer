@@ -6,7 +6,6 @@ import gi
 gi.require_version('Gtk', '4.0')
 from gi.repository import Gtk, GLib
 
-
 class InstallerSlide(Enum):
     WELCOME = auto()
     LOCATION = auto()
@@ -72,7 +71,7 @@ class AlloyInstaller(Gtk.Application):
         self.window.present()
 
     def _build_sidebar(self):
-        header = Gtk.Label(label="Alloy Installer", css_classes=['title-1'])
+        header = Gtk.Label(label="Alloy Installer")
         self.sidebar.append(header)
         self.sidebar_buttons = {}
 
@@ -81,17 +80,15 @@ class AlloyInstaller(Gtk.Application):
         for slide in InstallerSlide:
             btn = Gtk.Button(
                 label=slide.name.capitalize(),
-                halign=Gtk.Align.FILL,  # Make buttons fill horizontal space
-                hexpand=True  # Expand horizontally
+                halign=Gtk.Align.FILL,
+                hexpand=True
             )
             btn.connect('clicked', self._on_navigate, slide)
             button_container.append(btn)
             self.sidebar_buttons[slide] = btn
 
-        # Add button container to sidebar
         self.sidebar.append(button_container)
 
-        # Update initial styles
         self._update_sidebar_styles()
 
     def _update_content(self):
