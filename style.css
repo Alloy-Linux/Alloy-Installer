@@ -1,0 +1,124 @@
+.clickable-entry {
+
+    padding: 8px;
+    border-radius: 6px;
+    transition: background-color 0.2s ease;
+}
+
+.clickable-entry:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+.color-square {
+    border-radius: 3px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    position: relative;
+    overflow: hidden;
+}
+
+.color-ext4 {
+    background-color: #22c55e;
+}
+
+.color-ntfs {
+    background-color: #3b82f6;
+}
+
+.color-fat32 {
+    background-color: #f59e0b;
+}
+
+.color-vfat {
+    background-color: #f59e0b;
+}
+
+.color-swap {
+    background-color: #ef4444;
+}
+
+.color-unknown {
+    background-color: #6b7280;
+}
+
+.color-square.color-selected {
+    background-color: #6b21a8 !important;
+    border: 2px solid #581c87 !important;
+    box-shadow: 0 0 0 2px rgba(91, 33, 168, 0.3);
+}
+
+.color-square.color-selected::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 8px;
+    height: 8px;
+    background: white;
+    border-radius: 50%;
+    z-index: 1;
+}
+
+.selected-partition-text {
+    color: #a855f7;
+}
+
+.dim-label {
+    opacity: 0.7;
+    font-size: 0.9em;
+}
+
+.color-purple {
+    background-color: #9333ea !important;
+    border: 2px solid #7c3aed !important;
+    box-shadow: 0 0 0 2px rgba(147, 51, 234, 0.3);
+}
+
+.highlighted-status {
+    color: #0066cc;
+    font-weight: bold;
+}
+
+.selection-indicator-frame {
+    background-color: #f0f8ff;
+    border: 2px solid #0066cc;
+    border-radius: 8px;
+}
+
+.clickable-entry:hover {
+    background-color: #f5f5f5;
+}
+
+.selection-indicator-frame {
+    background-color: #f0f8ff;
+    border: 2px solid #0066cc;
+    border-radius: 8px;
+}
+
+.highlighted-status {
+    color: #0066cc;
+    font-weight: bold;
+    font-size: 1.1em;
+}
+
+.status-alongside {
+    color: #0066cc;
+}
+
+.status-replace {
+    color: #ff8800;
+}
+
+.status-erase {
+    color: #cc0000;
+}
+
+.status-manual {
+    color: #6600cc;
+}
+
+.clickable-entry:hover {
+    background-color: #f5f5f5;
+
+}
+/* this file might need some cleaning up */

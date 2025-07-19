@@ -12,6 +12,7 @@ from ui.location import location_slide
 from ui.keyboard import keyboard_slide
 from ui.users import users_slide
 from ui.placeholder import placeholder_slide
+from ui.partitions.partition_slide import partition_slide
 
 
 class AlloyInstaller(Gtk.Application):
@@ -111,6 +112,8 @@ class AlloyInstaller(Gtk.Application):
                 location_slide(self.content_area, self._go_to_slide, self)
             case InstallerSlide.KEYBOARD:
                 keyboard_slide(self.content_area, self._go_to_slide, self)
+            case InstallerSlide.PARTITIONING:
+                partition_slide(self.content_area, self._go_to_slide)
             case InstallerSlide.USERS:
                 users_slide(self.content_area, self._go_to_slide, self)
             case _:
