@@ -11,6 +11,7 @@ from ui.welcome import welcome_slide
 from ui.location import location_slide
 from ui.keyboard import keyboard_slide
 from ui.users import users_slide
+from ui.desktop import desktop_slide
 from ui.placeholder import placeholder_slide
 from ui.partitions.partition_slide import partition_slide
 
@@ -41,6 +42,39 @@ class AlloyInstaller(Gtk.Application):
         self.user_password = ""
         self.root_password = ""
 
+        self.selected_desktop = None
+        self.selected_display_server = None
+
+        self.desktop_environments = ["gnome", "kde", "xfce", "cinnamon"]
+        self.display_servers = ["x11", "wayland"]
+
+        self.de_compatibility = {
+            "gnome": ["wayland"],
+            "kde": ["x11", "wayland"],
+            "xfce": ["x11"],
+            "cinnamon": ["x11"]
+        }
+
+        self.selected_desktop = False
+
+        self.desktop_info = {
+            "gnome": {
+                "image": "./content/tux.png",
+                "description": "GNOME offers a modern, simple, and distraction-free desktop. Great for newcomers and minimalists."
+            },
+            "kde": {
+                "image": "./content/tux.png",
+                "description": "KDE Plasma is a powerful, highly customizable desktop with advanced features and effects."
+            },
+            "xfce": {
+                "image": "./content/tux.png",
+                "description": "XFCE is lightweight and fast, ideal for older systems or users who prefer performance over visuals."
+            },
+            "cinnamon": {
+                "image": "./content/tux.png",
+                "description": "Cinnamon provides a traditional desktop layout. User-friendly and stable."
+            }
+        }
 
 
     def do_activate(self):
@@ -116,6 +150,8 @@ class AlloyInstaller(Gtk.Application):
                 partition_slide(self.content_area, self._go_to_slide)
             case InstallerSlide.USERS:
                 users_slide(self.content_area, self._go_to_slide, self)
+            case InstallerSlide.DESKTOP:
+                desktop_slide(self.content_area, self._go_to_slide, self)
             case _:
                 placeholder_slide(self.content_area, self.current_slide.name)
 
@@ -197,6 +233,68 @@ class AlloyInstaller(Gtk.Application):
         index = dropdown.get_selected()
         if model and index >= 0:
             self.selected_variant = model.get_string(index)
+
+# Desktop
+
+    def _populate_desktops(self):
+        while child := self.desktop_listbox.get_first_child():
+            self.desktop_listbox.remove(child)
+
+        for de in self.desktop_environments:
+            row = Gtk.ListBoxRow()
+            label = Gtk.Label(label=de, halign=Gtk.Align.START, margin_start=10)
+            row.set_child(label)
+            self.desktop_listbox.append(row)
+
+        if self.selected_desktop not in self.desktop_environments:
+            self.selected_desktop = self.desktop_environments[0]
+
+        for row in self.desktop_listbox:
+            if row.get_child().get_label() == self.selected_desktop:
+                self.desktop_listbox.select_row(row)
+                break
+
+    def _populate_display_dropdown(self):
+        if not hasattr(self, 'display_dropdown'):
+            return
+
+        valid_displays = self.de_compatibility.get(self.selected_desktop, [])
+        store = Gtk.StringList.new(valid_displays)
+        self.display_dropdown.set_model(store)
+
+        if self.selected_display_server not in valid_displays:
+            self.selected_display_server = valid_displays[0] if valid_displays else None
+
+        if self.selected_display_server:
+            self.display_dropdown.set_selected(valid_displays.index(self.selected_display_server))
+        else:
+            self.display_dropdown.set_selected(-1)
+
+    def _on_desktop_selected(self, listbox, row):
+        if not row:
+            return
+        self.selected_desktop = row.get_child().get_label()
+
+        valid_displays = self.de_compatibility.get(self.selected_desktop, [])
+        if self.selected_display_server not in valid_displays:
+            self.selected_display_server = valid_displays[0] if valid_displays else None
+
+        self._populate_display_dropdown()
+        if hasattr(self, 'desktop_image') and hasattr(self, 'desktop_description'):
+            info = self.desktop_info.get(self.selected_desktop, {})
+            image_path = info.get('image')
+            description = info.get('description')
+
+            if image_path:
+                self.desktop_image.set_from_file(image_path)
+            if description:
+                self.desktop_description.set_label(description)
+
+    def _on_display_dropdown_selected(self, dropdown, _):
+        model = dropdown.get_model()
+        index = dropdown.get_selected()
+        if model and index >= 0:
+            self.selected_display_server = model.get_string(index)
 
 
 
