@@ -24,7 +24,7 @@ class PartitionBar(Gtk.DrawingArea):
         self.add_controller(click_controller)
         click_controller.connect("pressed", self.on_bar_clicked)
 
-    def on_bar_clicked(self, x):
+    def on_bar_clicked(self, gesture, n_press, x, y):
         if not self.on_partition_selected or not self.partitions:
             return
 
@@ -65,7 +65,7 @@ class PartitionBar(Gtk.DrawingArea):
 
             current_x += segment_width
 
-    def on_draw(self, cr, width, height):
+    def on_draw(self, drawing_area, cr, width, height):
         global alloy_width
         cr.set_line_width(1)
 

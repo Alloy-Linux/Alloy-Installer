@@ -177,6 +177,8 @@ class PartitionUI:
 
         self.partition_display_area = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=10)
         self.partition_display_area.set_margin_start(10)
+        self.partition_display_area.set_size_request(-1, 100)
+        self.partition_display_area.set_vexpand(True)
         main_box.append(self.partition_display_area)
 
         disk_combo.connect("changed", lambda _: self.on_disk_selected(disk_combo))
@@ -307,6 +309,7 @@ class PartitionUI:
 
         selected_device = self.partition_manager.get_partition_info(selected_disk_name)
 
+
         if selected_device and selected_device.get("children"):
             total_disk_size = int(selected_device.get("size", 0))
             partitions_to_display = [child for child in selected_device.get("children", [])
@@ -322,13 +325,8 @@ class PartitionUI:
                         self.update_size_slider(part_size_bytes)
 
             if self.current_partitioning_mode == PartitioningMode.INSTALL_ALONGSIDE:
-                def partition_bar_alongside_callback(part_name):
-                    selected_part = next(
-                        (p for p in partitions_to_display if p.get("name") == part_name),
-                        None)
-                    if selected_part:
-                        part_size_bytes = int(selected_part.get("size", 0))
-                        self.on_partition_selected_alongside(part_name, part_size_bytes)
+                def partition_bar_alongside_callback(part_name, part_size_bytes):
+                    self.on_partition_selected_alongside(part_name, part_size_bytes)
 
                 if self.partition_bar is None:
                     self.partition_bar = PartitionBar(partitions_to_display, total_disk_size,
@@ -403,7 +401,7 @@ class PartitionUI:
                     click_controller = Gtk.GestureClick()
                     legend_entry_box.add_controller(click_controller)
 
-                    def on_partition_click_alongside(p=part):
+                    def on_partition_click_alongside(gesture, clicks, x, y, p=part):
                         part_size_bytes = int(p.get("size", 0))
                         self.on_partition_selected_alongside(p.get("name"), part_size_bytes)
 

@@ -3,29 +3,27 @@ import json
 from .utils import human_readable_size
 
 
-def get_partition_info(disk_name):
-    try:
-        result = subprocess.run(
-            ["lsblk", "--json", "-o", "NAME,TYPE,SIZE,FSTYPE,MOUNTPOINT", "-b", f"/dev/{disk_name}"],
-            capture_output=True,
-            text=True
-        )
-        if result.returncode != 0:
-            print(f"Error getting partition info for {disk_name}: {result.stderr}")
-            return None
-        data = json.loads(result.stdout)
-        selected_device = None
-        for device in data.get("blockdevices", []):
-            if device.get("name") == disk_name:
-                selected_device = device
-                break
-        return selected_device
-    except (json.JSONDecodeError, FileNotFoundError) as e:
-        print(f"Error parsing partition info: {e}")
-        return None
-
-
 class PartitionManager:
+    def get_partition_info(self, disk_name):
+        try:
+            result = subprocess.run(
+                ["lsblk", "--json", "-o", "NAME,TYPE,SIZE,FSTYPE,MOUNTPOINT", "-b", f"/dev/{disk_name}"],
+                capture_output=True,
+                text=True
+            )
+            if result.returncode != 0:
+                print(f"Error getting partition info for {disk_name}: {result.stderr}")
+                return None
+            data = json.loads(result.stdout)
+            selected_device = None
+            for device in data.get("blockdevices", []):
+                if device.get("name") == disk_name:
+                    selected_device = device
+                    break
+            return selected_device
+        except (json.JSONDecodeError, FileNotFoundError) as e:
+            print(f"Error parsing partition info: {e}")
+            return None
     def __init__(self):
         self.all_disks_info = {}
         self.selected_disk_name = None

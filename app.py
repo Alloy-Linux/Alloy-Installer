@@ -14,6 +14,7 @@ from ui.users import users_slide
 from ui.desktop import desktop_slide
 from ui.placeholder import placeholder_slide
 from ui.partitions.partition_slide import partition_slide
+from gi.repository import Gtk, GLib, Gdk
 
 
 class AlloyInstaller(Gtk.Application):
@@ -36,6 +37,14 @@ class AlloyInstaller(Gtk.Application):
         self.keyboard_listbox = None
         self.keyboard_search = None
         self.selected_keyboard_display = None
+
+        css_provider = Gtk.CssProvider()
+        css_provider.load_from_path('style.css')
+        Gtk.StyleContext.add_provider_for_display(
+            Gdk.Display.get_default(),
+            css_provider,
+            Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION
+        )
 
         self.hostname = "alloy"
         self.username = ""
