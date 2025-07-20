@@ -2,6 +2,7 @@ from enum import Enum, auto
 
 class InstallerSlide(Enum):
     WELCOME = auto()
+    NETWORK = auto()
     LOCATION = auto()
     KEYBOARD = auto()
     PARTITIONING = auto()

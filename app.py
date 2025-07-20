@@ -15,6 +15,7 @@ from ui.desktop import desktop_slide
 from ui.placeholder import placeholder_slide
 from ui.partitions.partition_slide import partition_slide
 from gi.repository import Gtk, GLib, Gdk
+from ui.network import network_slide
 
 
 class AlloyInstaller(Gtk.Application):
@@ -151,6 +152,8 @@ class AlloyInstaller(Gtk.Application):
         match self.current_slide:
             case InstallerSlide.WELCOME:
                 welcome_slide(self.content_area, self._go_to_slide)
+            case InstallerSlide.NETWORK:
+                network_slide(self.content_area, self._go_to_slide)
             case InstallerSlide.LOCATION:
                 location_slide(self.content_area, self._go_to_slide, self)
             case InstallerSlide.KEYBOARD:
