@@ -1,4 +1,6 @@
 import gi
+import subprocess
+
 gi.require_version('Gtk', '4.0')
 from gi.repository import Gtk
 
@@ -106,16 +108,12 @@ class PartitionUI:
         box_erase.append(desc_erase)
         options_frame_content_box.append(box_erase)
 
-        manual_partitioning_radio = Gtk.CheckButton()
-        manual_partitioning_radio.set_label("Manual partitioning")
-        manual_partitioning_radio.set_group(install_alongside_radio)
-
-        desc_manual = Gtk.Label(label="You can create or resize partitions yourself.", xalign=0)
-        desc_manual.set_margin_start(25)
+        manual_partitioning_button = Gtk.Button()
+        manual_partitioning_button.set_label("Launch manual partitioner")
+        manual_partitioning_button.connect("clicked", self.on_manual_partitioning_clicked)
 
         box_manual = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=5)
-        box_manual.append(manual_partitioning_radio)
-        box_manual.append(desc_manual)
+        box_manual.append(manual_partitioning_button)
         options_frame_content_box.append(box_manual)
 
         main_box.append(options_frame)
@@ -168,8 +166,8 @@ class PartitionUI:
         current_info_box.append(self.current_disk_label)
         current_info_box.append(self.current_partition_label)
 
-        for radio in [install_alongside_radio, replace_partition_radio, erase_disk_radio, manual_partitioning_radio]:
-            radio.connect("toggled", lambda *_: self.update_option_ui(install_alongside_radio, replace_partition_radio, erase_disk_radio, manual_partitioning_radio, disk_combo))
+        for radio in [install_alongside_radio, replace_partition_radio, erase_disk_radio]:
+            radio.connect("toggled", lambda *_: self.update_option_ui(install_alongside_radio, replace_partition_radio, erase_disk_radio, disk_combo))
 
         encryption_button = Gtk.CheckButton()
         encryption_button.set_label("Enable full-disk encryption?")
@@ -201,6 +199,14 @@ class PartitionUI:
         main_box.append(btn_box)
 
         return main_box
+
+    def on_manual_partitioning_clicked(self, button):
+        try:
+            subprocess.run(["gparted"], check=True)
+        except FileNotFoundError:
+            print("gparted not found. Please install it.")
+        except subprocess.CalledProcessError as e:
+            print(f"Error launching gparted: {e}")
 
     def on_size_slider_value_changed(self, scale):
         value = scale.get_value()
@@ -258,7 +264,7 @@ class PartitionUI:
         if self.partition_manager.selected_disk_name:
             self.update_partition_display(self.partition_manager.selected_disk_name)
 
-    def update_option_ui(self, install_alongside_radio, replace_partition_radio, erase_disk_radio, manual_partitioning_radio, disk_combo):
+    def update_option_ui(self, install_alongside_radio, replace_partition_radio, erase_disk_radio, disk_combo):
         old_mode = self.current_partitioning_mode
 
         if install_alongside_radio.get_active():
@@ -268,8 +274,6 @@ class PartitionUI:
             self.size_adjustment.set_value(self.size_adjustment.get_upper())
         elif erase_disk_radio.get_active():
             self.current_partitioning_mode = PartitioningMode.ERASE_DISK
-        elif manual_partitioning_radio.get_active():
-            self.current_partitioning_mode = PartitioningMode.MANUAL_PARTITIONING
 
         if old_mode == PartitioningMode.INSTALL_ALONGSIDE and self.current_partitioning_mode == PartitioningMode.REPLACE_PARTITION and self.partition_manager.selected_partition_for_alongside:
             self.partition_manager.selected_partition = self.partition_manager.selected_partition_for_alongside
