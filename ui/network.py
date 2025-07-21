@@ -22,7 +22,7 @@ def create_network_widget(network, on_network_click):
     row_box.set_margin_end(6)
 
     click_controller = Gtk.GestureClick()
-    click_controller.connect("pressed", lambda gesture, n_press, x, y: on_network_click(network))
+    click_controller.connect("pressed", lambda gesture, n_press, x, y: on_network_click(network, row_box))
     row_box.add_controller(click_controller)
 
     row_box.set_css_classes(['network-row'])
@@ -214,6 +214,7 @@ def network_slide(content_area, go_to_slide):
 
     network_slide.has_connection = False
     network_slide.selected_network = None
+    network_slide.selected_widget = None
 
     scrolled_window = Gtk.ScrolledWindow()
     scrolled_window.set_policy(Gtk.PolicyType.NEVER, Gtk.PolicyType.AUTOMATIC)
@@ -243,7 +244,14 @@ def network_slide(content_area, go_to_slide):
             widget = widget.get_parent()
         return widget
 
-    def on_network_click(network):
+    def on_network_click(network, widget):
+
+        if network_slide.selected_widget:
+            network_slide.selected_widget.set_opacity(1)
+
+        widget.set_opacity(0.7)
+        network_slide.selected_widget = widget
+
         network_slide.selected_network = network
         selected_label.set_text(f"Selected: {network['ssid']}")
         
@@ -324,6 +332,19 @@ def network_slide(content_area, go_to_slide):
             for network in networks:
                 network_widget = create_network_widget(network, on_network_click)
                 box_networks.append(network_widget)
+                if network_slide.selected_network and network['ssid'] == network_slide.selected_network['ssid']:
+                    network_slide.selected_network = network
+                    network_slide.selected_widget = network_widget
+                    network_widget.set_opacity(0.7)
+                    action_btn.set_sensitive(True)
+                    selected_label.set_text(f"Selected: {network['ssid']}")
+
+                    if network['in_use']:
+                        action_btn.set_label("Disconnect")
+                        action_btn.set_css_classes(['destructive-action'])
+                    else:
+                        action_btn.set_label("Connect")
+                        action_btn.set_css_classes(['suggested-action'])
 
         scrolled_window.set_visible(True)
 
