@@ -13,7 +13,7 @@ def welcome_slide(content_area, go_to_slide):
     )
 
     next_btn = Gtk.Button(label="Continue", css_classes=['suggested-action'])
-    next_btn.connect('clicked', lambda _: go_to_slide(InstallerSlide.LOCATION))
+    next_btn.connect('clicked', lambda _: go_to_slide(InstallerSlide.NETWORK))
 
     box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=20, valign=Gtk.Align.CENTER)
     box.append(title)
