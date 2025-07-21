@@ -1,6 +1,8 @@
 import gi
 import subprocess
 
+import backend.data
+
 gi.require_version('Gtk', '4.0')
 from gi.repository import Gtk
 
@@ -170,6 +172,7 @@ class PartitionUI:
             radio.connect("toggled", lambda *_: self.update_option_ui(install_alongside_radio, replace_partition_radio, erase_disk_radio, disk_combo))
 
         encryption_button = Gtk.CheckButton()
+        encryption_button.connect("toggled", lambda btn: setattr(backend.data, 'full_disk_encryption', btn.get_active()))
         encryption_button.set_label("Enable full-disk encryption?")
         main_box.append(encryption_button)
 
@@ -251,6 +254,7 @@ class PartitionUI:
 
         if self.partition_manager.selected_disk_name:
             self.update_partition_display(self.partition_manager.selected_disk_name)
+        backend.data.selected_partition = part_name
 
     def on_partition_selected_alongside(self, part_name, part_size_bytes):
         self.partition_manager.set_selected_partition_for_alongside(part_name, part_size_bytes)
@@ -269,11 +273,14 @@ class PartitionUI:
 
         if install_alongside_radio.get_active():
             self.current_partitioning_mode = PartitioningMode.INSTALL_ALONGSIDE
+            backend.data.PartitioningMode = PartitioningMode.INSTALL_ALONGSIDE
         elif replace_partition_radio.get_active():
             self.current_partitioning_mode = PartitioningMode.REPLACE_PARTITION
             self.size_adjustment.set_value(self.size_adjustment.get_upper())
+            backend.data.PartitioningMode = PartitioningMode.REPLACE_PARTITION
         elif erase_disk_radio.get_active():
             self.current_partitioning_mode = PartitioningMode.ERASE_DISK
+            backend.data.PartitioningMode = PartitioningMode.ERASE_DISK
 
         if old_mode == PartitioningMode.INSTALL_ALONGSIDE and self.current_partitioning_mode == PartitioningMode.REPLACE_PARTITION and self.partition_manager.selected_partition_for_alongside:
             self.partition_manager.selected_partition = self.partition_manager.selected_partition_for_alongside
@@ -457,6 +464,7 @@ class PartitionUI:
             selected_disk_name = all_disks_info[selected_text]
             self.partition_manager.set_selected_disk(selected_disk_name)
             self.current_disk_label.set_label(f"Disk: /dev/{selected_disk_name}")
+            backend.data.selected_disk = selected_disk_name
             self.update_partition_display(selected_disk_name)
         else:
             self.current_disk_label.set_label("Disk: None selected")

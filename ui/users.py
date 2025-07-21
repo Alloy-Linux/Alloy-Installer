@@ -1,4 +1,7 @@
 import gi
+
+import backend.data
+
 gi.require_version('Gtk', '4.0')
 from gi.repository import Gtk
 from slides import InstallerSlide
@@ -153,6 +156,11 @@ def users_slide(content_area, go_to_slide, app):
             app.username = username_entry.get_text()
             app.user_password = password_entry.get_text()
             app.root_password = root_pw_entry.get_text()
+
+            backend.data.hostname = hostname_entry.get_text()
+            backend.data.username = username_entry.get_text()
+            backend.data.user_password = password_entry.get_text()
+            backend.data.root_password = root_pw_entry.get_text()
             go_to_slide(InstallerSlide.DESKTOP)
         else:
             return
