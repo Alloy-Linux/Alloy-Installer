@@ -6,9 +6,10 @@ keyboard_layout: str = ""
 keyboard_variant: str = ""
 
 full_disk_encryption: bool = False
-partitioning_mode: PartitioningMode
+partitioning_mode: PartitioningMode = PartitioningMode.NONE
 selected_disk: str = ""
 selected_partition: str = ""
+install_alongside_size: int
 
 hostname: str = ""
 username: str = ""
