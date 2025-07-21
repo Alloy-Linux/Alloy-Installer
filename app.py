@@ -17,6 +17,7 @@ from ui.placeholder import placeholder_slide
 from ui.partitions.partition_slide import partition_slide
 from gi.repository import Gtk, GLib, Gdk
 from ui.network import network_slide
+from ui.summary import summary_slide
 import backend.data
 
 
@@ -87,6 +88,7 @@ class AlloyInstaller(Gtk.Application):
                 "description": "Cinnamon provides a traditional desktop layout. User-friendly and stable."
             }
         }
+        self.slide_save_callback = None
 
 
     def do_activate(self):
@@ -166,6 +168,8 @@ class AlloyInstaller(Gtk.Application):
                 users_slide(self.content_area, self._go_to_slide, self)
             case InstallerSlide.DESKTOP:
                 desktop_slide(self.content_area, self._go_to_slide, self)
+            case InstallerSlide.SUMMARY:
+                summary_slide(self.content_area, self._go_to_slide, self)
             case _:
                 placeholder_slide(self.content_area, self.current_slide.name)
 
@@ -197,7 +201,6 @@ class AlloyInstaller(Gtk.Application):
             label = row.get_child()
             self.selected_timezone = label.get_text()
             self.selected_display.set_text(self.selected_timezone)
-            backend.data.location = self.selected_timezone
 
 # Keyboard
 
@@ -242,9 +245,6 @@ class AlloyInstaller(Gtk.Application):
             self.variant_dropdown.set_model(store)
             self.variant_dropdown.set_selected(0)
             self.selected_variant = "default"
-
-            backend.data.keyboard_layout = self.selected_keyboard
-            backend.data.keyboard_variant = self.selected_variant
 
     def _on_variant_selected(self, dropdown, _):
         model = dropdown.get_model()
@@ -322,6 +322,14 @@ class AlloyInstaller(Gtk.Application):
         self._go_to_slide(slide)
 
     def _go_to_slide(self, slide):
+
+        if self.slide_save_callback:
+            try:
+                self.slide_save_callback()
+            except Exception as e:
+                print(f"Error saving data: {e}")
+            self.slide_save_callback = None
+
         self.current_slide = slide
         self._update_content()
         self._update_sidebar_styles()

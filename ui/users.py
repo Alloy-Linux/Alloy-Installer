@@ -1,6 +1,6 @@
 import gi
 
-import backend.data
+import backend.data as data
 
 gi.require_version('Gtk', '4.0')
 from gi.repository import Gtk
@@ -147,7 +147,7 @@ def users_slide(content_area, go_to_slide, app):
     back_btn = Gtk.Button(label="Back")
     back_btn.connect('clicked', lambda _: go_to_slide(InstallerSlide.PARTITIONING))
 
-    def on_continue_clicked(_):
+    def save_data():
         p1 = password_entry.get_text()
         p2 = confirm_entry.get_text()
         p3 = root_pw_entry.get_text()
@@ -158,16 +158,36 @@ def users_slide(content_area, go_to_slide, app):
             app.user_password = password_entry.get_text()
             app.root_password = root_pw_entry.get_text()
 
-            backend.data.hostname = hostname_entry.get_text()
-            backend.data.username = username_entry.get_text()
-            backend.data.user_password = password_entry.get_text()
-            backend.data.root_password = root_pw_entry.get_text()
+            data.hostname = hostname_entry.get_text()
+            data.username = username_entry.get_text()
+            data.user_password = password_entry.get_text()
+            data.root_password = root_pw_entry.get_text()
+        else:
+            return
+
+    app.slide_save_callback = save_data
+
+    def on_continue(_):
+        p1 = password_entry.get_text()
+        p2 = confirm_entry.get_text()
+        p3 = root_pw_entry.get_text()
+        p4 = root_confirm_entry.get_text()
+        if p1 == p2 and p3 == p4:
+            app.hostname = hostname_entry.get_text()
+            app.username = username_entry.get_text()
+            app.user_password = password_entry.get_text()
+            app.root_password = root_pw_entry.get_text()
+
+            data.hostname = hostname_entry.get_text()
+            data.username = username_entry.get_text()
+            data.user_password = password_entry.get_text()
+            data.root_password = root_pw_entry.get_text()
             go_to_slide(InstallerSlide.DESKTOP)
         else:
             return
 
     next_btn = Gtk.Button(label="Continue", css_classes=['suggested-action'])
-    next_btn.connect('clicked', on_continue_clicked)
+    next_btn.connect('clicked', on_continue)
 
     btn_box.append(back_btn)
     btn_box.append(next_btn)
