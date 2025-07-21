@@ -207,14 +207,13 @@ class PartitionUI:
     def on_manual_partitioning_clicked(self, button):
         try:
             subprocess.run(["gparted"], check=True)
-        except FileNotFoundError:
-            print("gparted not found. Please install it.")
         except subprocess.CalledProcessError as e:
             print(f"Error launching gparted: {e}")
 
     def on_size_slider_value_changed(self, scale):
         value = scale.get_value()
         self.size_value_label.set_label(f"{int(value)} GB")
+        backend.data.install_alongside_size = value / 1024
         if self.current_partitioning_mode == PartitioningMode.INSTALL_ALONGSIDE and self.partition_manager.selected_partition_for_alongside and self.partition_bar:
             self.partition_bar.alloy_partition_size_gb = value
             self.partition_bar.selected_partition_total_size_bytes = self.partition_manager.selected_partition_size
