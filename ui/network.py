@@ -373,6 +373,7 @@ def network_slide(content_area, go_to_slide):
     GLib.timeout_add_seconds(5, update_internet_status)
 
     btn_box = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=10)
+    btn_box.set_halign(Gtk.Align.END)
 
     back_btn = Gtk.Button(label="Back")
     back_btn.connect('clicked', lambda _: go_to_slide(InstallerSlide.WELCOME))

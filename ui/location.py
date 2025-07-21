@@ -46,6 +46,7 @@ def location_slide(content_area, go_to_slide, app):
     main_box.append(selected_box)
 
     btn_box = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=10)
+    btn_box.set_halign(Gtk.Align.END)
     back_btn = Gtk.Button(label="Back")
     back_btn.connect('clicked', lambda _: go_to_slide(InstallerSlide.NETWORK))
     next_btn = Gtk.Button(label="Continue", css_classes=['suggested-action'])

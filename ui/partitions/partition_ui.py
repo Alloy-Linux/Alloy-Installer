@@ -9,6 +9,7 @@ from gi.repository import Gtk
 from .constants import FSTYPE_COLOR_CLASSES, PartitioningMode
 from .utils import get_os, human_readable_size
 from .partition_bar import PartitionBar
+from slides import InstallerSlide
 
 class PartitionUI:
     def __init__(self, partition_manager, go_to_slide_callback):
@@ -192,10 +193,10 @@ class PartitionUI:
         btn_box.set_halign(Gtk.Align.END)
 
         back_btn = Gtk.Button(label="Back")
-        back_btn.connect('clicked', lambda _: self.go_to_slide(self.go_to_slide.KEYBOARD))
+        back_btn.connect('clicked', lambda _: self.go_to_slide(InstallerSlide.KEYBOARD))
 
         next_btn = Gtk.Button(label="Continue", css_classes=['suggested-action'])
-        next_btn.connect('clicked', lambda _: self.go_to_slide(self.go_to_slide.USERS))
+        next_btn.connect('clicked', lambda _: self.go_to_slide(InstallerSlide.USERS))
 
         btn_box.append(back_btn)
         btn_box.append(next_btn)
