@@ -1,4 +1,5 @@
 import zoneinfo
+
 import gi
 import json
 import os
@@ -16,6 +17,7 @@ from ui.placeholder import placeholder_slide
 from ui.partitions.partition_slide import partition_slide
 from gi.repository import Gtk, GLib, Gdk
 from ui.network import network_slide
+import backend.data
 
 
 class AlloyInstaller(Gtk.Application):
@@ -59,8 +61,8 @@ class AlloyInstaller(Gtk.Application):
         self.display_servers = ["x11", "wayland"]
 
         self.de_compatibility = {
-            "gnome": ["wayland"],
-            "kde": ["x11", "wayland"],
+            "gnome": ["wayland", "x11"],
+            "kde": ["wayland", "x11"],
             "xfce": ["x11"],
             "cinnamon": ["x11"]
         }
@@ -195,6 +197,7 @@ class AlloyInstaller(Gtk.Application):
             label = row.get_child()
             self.selected_timezone = label.get_text()
             self.selected_display.set_text(self.selected_timezone)
+            backend.data.location = self.selected_timezone
 
 # Keyboard
 
@@ -239,6 +242,9 @@ class AlloyInstaller(Gtk.Application):
             self.variant_dropdown.set_model(store)
             self.variant_dropdown.set_selected(0)
             self.selected_variant = "default"
+
+            backend.data.keyboard_layout = self.selected_keyboard
+            backend.data.keyboard_variant = self.selected_variant
 
     def _on_variant_selected(self, dropdown, _):
         model = dropdown.get_model()
@@ -286,10 +292,12 @@ class AlloyInstaller(Gtk.Application):
         if not row:
             return
         self.selected_desktop = row.get_child().get_label()
+        backend.data.desktop_environment = self.selected_desktop
 
         valid_displays = self.de_compatibility.get(self.selected_desktop, [])
         if self.selected_display_server not in valid_displays:
             self.selected_display_server = valid_displays[0] if valid_displays else None
+            backend.data.display_server = self.selected_display_server
 
         self._populate_display_dropdown()
         if hasattr(self, 'desktop_image') and hasattr(self, 'desktop_description'):
