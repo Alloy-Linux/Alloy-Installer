@@ -34,3 +34,4 @@ class PartitioningMode(Enum):
     REPLACE_PARTITION = "replace_partition"
     ERASE_DISK = "erase_disk"
     MANUAL_PARTITIONING = "manual_partitioning"
+    NONE = "none"
