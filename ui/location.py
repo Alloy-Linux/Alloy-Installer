@@ -2,7 +2,7 @@ import gi
 gi.require_version('Gtk', '4.0')
 from gi.repository import Gtk
 from slides import InstallerSlide
-import backend.data
+import backend.data as data
 
 def location_slide(content_area, go_to_slide, app):
     title = Gtk.Label(label="Select Your Location and Timezone", css_classes=['title-1'])
@@ -33,7 +33,6 @@ def location_slide(content_area, go_to_slide, app):
     selected_box = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=10)
     selected_label = Gtk.Label(label="Selected Timezone:")
     app.selected_display = Gtk.Label(label=app.selected_timezone)
-    backend.data.location = app.selected_timezone
     app.selected_display.set_hexpand(True)
     app.selected_display.set_halign(Gtk.Align.START)
 
@@ -49,8 +48,17 @@ def location_slide(content_area, go_to_slide, app):
     btn_box.set_halign(Gtk.Align.END)
     back_btn = Gtk.Button(label="Back")
     back_btn.connect('clicked', lambda _: go_to_slide(InstallerSlide.NETWORK))
+
+    def save_data():
+        data.location = app.selected_timezone
+    app.slide_save_callback = save_data
+
+    def on_continue(_):
+        save_data()
+        go_to_slide(InstallerSlide.KEYBOARD)
+
     next_btn = Gtk.Button(label="Continue", css_classes=['suggested-action'])
-    next_btn.connect('clicked', lambda _: go_to_slide(InstallerSlide.KEYBOARD))
+    next_btn.connect('clicked', on_continue)
 
     btn_box.append(back_btn)
     btn_box.append(next_btn)

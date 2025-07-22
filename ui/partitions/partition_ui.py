@@ -273,14 +273,14 @@ class PartitionUI:
 
         if install_alongside_radio.get_active():
             self.current_partitioning_mode = PartitioningMode.INSTALL_ALONGSIDE
-            backend.data.PartitioningMode = PartitioningMode.INSTALL_ALONGSIDE
+            backend.data.partitioning_mode = PartitioningMode.INSTALL_ALONGSIDE
         elif replace_partition_radio.get_active():
             self.current_partitioning_mode = PartitioningMode.REPLACE_PARTITION
             self.size_adjustment.set_value(self.size_adjustment.get_upper())
-            backend.data.PartitioningMode = PartitioningMode.REPLACE_PARTITION
+            backend.data.partitioning_mode = PartitioningMode.REPLACE_PARTITION
         elif erase_disk_radio.get_active():
             self.current_partitioning_mode = PartitioningMode.ERASE_DISK
-            backend.data.PartitioningMode = PartitioningMode.ERASE_DISK
+            backend.data.partitioning_mode = PartitioningMode.ERASE_DISK
 
         if old_mode == PartitioningMode.INSTALL_ALONGSIDE and self.current_partitioning_mode == PartitioningMode.REPLACE_PARTITION and self.partition_manager.selected_partition_for_alongside:
             self.partition_manager.selected_partition = self.partition_manager.selected_partition_for_alongside
