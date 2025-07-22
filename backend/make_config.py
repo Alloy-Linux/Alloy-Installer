@@ -38,6 +38,9 @@ def create_config():
         subprocess.run(["sudo", "rm", "-f", f"default-config/profile/workstation/{de}.nix"], check=True)
 
     update_desktop_import_path(data.desktop_environment.lower())
+    update_location(data.location)
+    update_keyboard(data.keyboard_layout)
+    update_keyboard_variant(data.keyboard_variant)
     subprocess.run(["sudo", "cp", "-r", "default-config/.", "/mnt/etc/nixos/"], check=True)
 
 
@@ -55,5 +58,62 @@ def update_desktop_import_path(desktop: str):
         for line in lines:
             if line.strip().startswith("imports ="):
                 f.write(f"  imports = [ {path} ];\n")
+            else:
+                f.write(line)
+
+
+def update_location(new_location: str):
+    config_path = "default-config/profile/home/compose.nix"
+
+    with open(config_path, "r") as f:
+        lines = f.readlines()
+
+    with open(config_path, "w") as f:
+        for line in lines:
+            if line.strip().startswith("time.timeZone"):
+                f.write(f'  time.timeZone = "{new_location}";\n')
+            else:
+                f.write(line)
+
+
+
+def update_keyboard(new_layout: str):
+    config_path = "default-config/profile/home/compose.nix"
+
+    with open(config_path, "r") as f:
+        lines = f.readlines()
+
+    with open(config_path, "w") as f:
+        for line in lines:
+            if line.strip().startswith("services.xserver.layout"):
+                f.write(f'  services.xserver.layout = "{new_layout}";\n')
+            else:
+                f.write(line)
+
+
+def update_keyboard_variant(new_variant: str):
+    config_path = "default-config/profile/home/compose.nix"
+
+    with open(config_path, "r") as f:
+        lines = f.readlines()
+
+    with open(config_path, "w") as f:
+        for line in lines:
+            if line.strip().startswith("services.xserver.xkbOption"):
+                f.write(f'  services.xserver.xkbOption = "{new_variant}";\n')
+            else:
+                f.write(line)
+
+
+def update_username(new_username: str):
+    config_path = "default-config/profile/home/compose.nix"
+
+    with open(config_path, "r") as f:
+        lines = f.readlines()
+
+    with open(config_path, "w") as f:
+        for line in lines:
+            if line.strip().startswith("username"):
+                f.write(f'  username = "{new_username}";\n')
             else:
                 f.write(line)
