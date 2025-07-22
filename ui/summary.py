@@ -46,7 +46,6 @@ def summary_slide(content_area, go_to_slide, app):
         add_row("Selected Partition", data.selected_partition)
     
     add_row("Desktop Environment", data.desktop_environment)
-    add_row("Display Server", data.display_server)
     
     btn_box = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=10)
     btn_box.set_halign(Gtk.Align.END)
