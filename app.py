@@ -41,6 +41,7 @@ class AlloyInstaller(Gtk.Application):
         self.keyboard_listbox = None
         self.keyboard_search = None
         self.selected_keyboard_display = None
+        self.selected_variant = None
 
         css_provider = Gtk.CssProvider()
         css_provider.load_from_path('style.css')
@@ -56,24 +57,8 @@ class AlloyInstaller(Gtk.Application):
         self.root_password = ""
 
         self.selected_desktop = None
-        self.selected_display_server = None
 
         self.desktop_environments = ["gnome", "kde", "xfce", "cinnamon", "cosmic", "lxqt", "budgie", "MATE", "deepin", "pantheon", "no desktop"]
-        self.display_servers = ["x11", "wayland"]
-
-        self.de_compatibility = {
-            "gnome": ["wayland", "x11"],
-            "kde": ["wayland", "x11"],
-            "xfce": ["x11"],
-            "cinnamon": ["x11"],
-            "cosmic": ["wayland"],
-            "lxqt": ["x11"],
-            "budgie": ["wayland", "x11"],
-            "MATE": ["x11"],
-            "deepin": ["x11"],
-            "pantheon": ["x11"],
-            "no desktop": []
-        }
 
         self.selected_desktop = False
 
@@ -309,34 +294,12 @@ class AlloyInstaller(Gtk.Application):
                 self.desktop_listbox.select_row(row)
                 break
 
-    def _populate_display_dropdown(self):
-        if not hasattr(self, 'display_dropdown'):
-            return
-
-        valid_displays = self.de_compatibility.get(self.selected_desktop, [])
-        store = Gtk.StringList.new(valid_displays)
-        self.display_dropdown.set_model(store)
-
-        if self.selected_display_server not in valid_displays:
-            self.selected_display_server = valid_displays[0] if valid_displays else None
-
-        if self.selected_display_server:
-            self.display_dropdown.set_selected(valid_displays.index(self.selected_display_server))
-        else:
-            self.display_dropdown.set_selected(-1)
-
     def _on_desktop_selected(self, listbox, row):
         if not row:
             return
         self.selected_desktop = row.get_child().get_label()
         backend.data.desktop_environment = self.selected_desktop
-
-        valid_displays = self.de_compatibility.get(self.selected_desktop, [])
-        if self.selected_display_server not in valid_displays:
-            self.selected_display_server = valid_displays[0] if valid_displays else None
-            backend.data.display_server = self.selected_display_server
-
-        self._populate_display_dropdown()
+        
         if hasattr(self, 'desktop_image') and hasattr(self, 'desktop_description'):
             info = self.desktop_info.get(self.selected_desktop, {})
             image_path = info.get('image')
@@ -346,13 +309,6 @@ class AlloyInstaller(Gtk.Application):
                 self.desktop_image.set_from_file(image_path)
             if description:
                 self.desktop_description.set_label(description)
-
-    def _on_display_dropdown_selected(self, dropdown, _):
-        model = dropdown.get_model()
-        index = dropdown.get_selected()
-        if model and index >= 0:
-            self.selected_display_server = model.get_string(index)
-
 
 
     def _on_navigate(self, button, slide):

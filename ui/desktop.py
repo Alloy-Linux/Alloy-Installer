@@ -50,25 +50,6 @@ def desktop_slide(content_area, go_to_slide, app):
     main_box.append(de_label)
     main_box.append(de_scroll)
 
-    ds_label = Gtk.Label(label="Display Server:")
-    ds_label.set_halign(Gtk.Align.START)
-
-    app.display_dropdown = Gtk.DropDown()
-    app.display_dropdown.set_hexpand(True)
-    app.display_dropdown.connect("notify::selected", app._on_display_dropdown_selected)
-
-    main_box.append(ds_label)
-    main_box.append(app.display_dropdown)
-
-    warning_label = Gtk.Label(
-        label="⚠️ Do not change Display Server from the default unless you know what you're doing.",
-        wrap=True
-    )
-    warning_label.set_halign(Gtk.Align.START)
-    warning_label.add_css_class("dim-label")
-
-    main_box.append(warning_label)
-
     btn_box = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=10)
     btn_box.set_halign(Gtk.Align.END)
     back_btn = Gtk.Button(label="Back")
@@ -76,7 +57,6 @@ def desktop_slide(content_area, go_to_slide, app):
 
     def save_data():
         data.desktop_environment = app.selected_desktop
-        data.display_server = app.selected_display_server
     app.slide_save_callback = save_data
 
     def on_continue(_):
@@ -91,6 +71,5 @@ def desktop_slide(content_area, go_to_slide, app):
     main_box.append(btn_box)
 
     app._populate_desktops()
-    app._populate_display_dropdown()
 
     content_area.append(main_box)
