@@ -1,9 +1,16 @@
 # Core NixOS configuration applied to all profiles
 { lib, pkgs, ... }:
+let
+    username = "user";
+in
 {
   # System basics
   networking.hostName = "alloy-linux";
   time.timeZone = "America/Chicago";
+
+  # Keyboard layout
+  services.xserver.layout = "us";
+  services.xserver.xkbOptions = "intl";
 
   # Enable flakes and trust wheel users
   nix.extraOptions = "experimental-features = nix-command flakes";
@@ -13,7 +20,7 @@
   home-manager.useUserPackages = false;
   home-manager.backupFileExtension = "hm-backup";
   home-manager.useGlobalPkgs = false;
-  home-manager.users.user = {
+  home-manager.users.${username} = {
     programs.home-manager.enable = true;
     home.stateVersion = "25.05";
     home.packages = with pkgs; [
@@ -26,14 +33,17 @@
   system.stateVersion = "25.05";
 
   # Main user account
-  users.users.user = {
+  users.users.${username} = {
     isNormalUser = true;
     description = "";
-    password = "alloy";
+    hashedPassword = "";
     extraGroups = [ "networkmanager" "wheel" ]; # network + sudo access
     uid = 1000;
     shell = pkgs.bash;
+
   };
+
+  users.users.root.hashedPassword = "";
 
   # Enable zram swap and firewall
   services.zram-generator.enable = true;
