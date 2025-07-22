@@ -1,5 +1,4 @@
 import gi
-
 import backend.data as data
 
 gi.require_version('Gtk', '4.0')
@@ -20,6 +19,8 @@ def users_slide(content_area, go_to_slide, app):
     hostname_entry.set_placeholder_text("Enter the computer's hostname")
     hostname_entry.set_hexpand(True)
     hostname_entry.set_max_length(64)
+    if data.hostname:
+        hostname_entry.set_text(data.hostname)
     hostname_row.append(hostname_label)
     hostname_row.append(hostname_entry)
     main_box.append(hostname_row)
@@ -32,6 +33,8 @@ def users_slide(content_area, go_to_slide, app):
     username_entry.set_placeholder_text("Enter your username")
     username_entry.set_hexpand(True)
     username_entry.set_max_length(32)
+    if data.username:
+        username_entry.set_text(data.username)
     username_row.append(username_label)
     username_row.append(username_entry)
     main_box.append(username_row)
@@ -43,6 +46,8 @@ def users_slide(content_area, go_to_slide, app):
     password_entry = Gtk.PasswordEntry()
     password_entry.set_show_peek_icon(True)
     password_entry.set_hexpand(True)
+    if data.user_password:
+        password_entry.set_text(data.user_password)
     password_row.append(password_label)
     password_row.append(password_entry)
     main_box.append(password_row)
@@ -53,6 +58,8 @@ def users_slide(content_area, go_to_slide, app):
     confirm_label.set_width_chars(19)
     confirm_entry = Gtk.PasswordEntry()
     confirm_entry.set_hexpand(True)
+    if data.user_password:
+        confirm_entry.set_text(data.user_password)
     confirm_row.append(confirm_label)
     confirm_row.append(confirm_entry)
     main_box.append(confirm_row)
@@ -88,6 +95,8 @@ def users_slide(content_area, go_to_slide, app):
     root_pw_entry = Gtk.PasswordEntry()
     root_pw_entry.set_show_peek_icon(True)
     root_pw_entry.set_hexpand(True)
+    if data.root_password:
+        root_pw_entry.set_text(data.root_password)
     root_pw_row.append(root_pw_label)
     root_pw_row.append(root_pw_entry)
     main_box.append(root_pw_row)
@@ -98,6 +107,8 @@ def users_slide(content_area, go_to_slide, app):
     root_confirm_label.set_width_chars(19)
     root_confirm_entry = Gtk.PasswordEntry()
     root_confirm_entry.set_hexpand(True)
+    if data.root_password:
+        root_confirm_entry.set_text(data.root_password)
     root_confirm_row.append(root_confirm_label)
     root_confirm_row.append(root_confirm_entry)
     main_box.append(root_confirm_row)
@@ -142,6 +153,12 @@ def users_slide(content_area, go_to_slide, app):
             root_confirm_entry.set_text(password_entry.get_text())
     password_entry.connect("changed", on_user_password_for_root)
 
+    if data.user_password and data.root_password and data.user_password == data.root_password:
+        same_pw_check.set_active(True)
+        root_pw_entry.set_editable(False)
+        root_confirm_entry.set_editable(False)
+        root_match_label.set_text("Root password is same as user password")
+
     btn_box = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=10)
     btn_box.set_halign(Gtk.Align.END)
     back_btn = Gtk.Button(label="Back")
@@ -157,7 +174,6 @@ def users_slide(content_area, go_to_slide, app):
             app.username = username_entry.get_text()
             app.user_password = password_entry.get_text()
             app.root_password = root_pw_entry.get_text()
-
             data.hostname = hostname_entry.get_text()
             data.username = username_entry.get_text()
             data.user_password = password_entry.get_text()
@@ -177,7 +193,6 @@ def users_slide(content_area, go_to_slide, app):
             app.username = username_entry.get_text()
             app.user_password = password_entry.get_text()
             app.root_password = root_pw_entry.get_text()
-
             data.hostname = hostname_entry.get_text()
             data.username = username_entry.get_text()
             data.user_password = password_entry.get_text()
