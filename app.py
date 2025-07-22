@@ -5,7 +5,6 @@ import json
 import os
 
 gi.require_version('Gtk', '4.0')
-from gi.repository import Gtk, GLib
 
 from slides import InstallerSlide
 from ui.welcome import welcome_slide
@@ -59,14 +58,21 @@ class AlloyInstaller(Gtk.Application):
         self.selected_desktop = None
         self.selected_display_server = None
 
-        self.desktop_environments = ["gnome", "kde", "xfce", "cinnamon"]
+        self.desktop_environments = ["gnome", "kde", "xfce", "cinnamon", "cosmic", "lxqt", "budgie", "MATE", "deepin", "pantheon", "no desktop"]
         self.display_servers = ["x11", "wayland"]
 
         self.de_compatibility = {
             "gnome": ["wayland", "x11"],
             "kde": ["wayland", "x11"],
             "xfce": ["x11"],
-            "cinnamon": ["x11"]
+            "cinnamon": ["x11"],
+            "cosmic": ["wayland"],
+            "lxqt": ["x11"],
+            "budgie": ["wayland", "x11"],
+            "MATE": ["x11"],
+            "deepin": ["x11"],
+            "pantheon": ["x11"],
+            "no desktop": []
         }
 
         self.selected_desktop = False
@@ -87,6 +93,34 @@ class AlloyInstaller(Gtk.Application):
             "cinnamon": {
                 "image": "./content/tux.png",
                 "description": "Cinnamon provides a traditional desktop layout. User-friendly and stable."
+            },
+            "cosmic": {
+                "image": "./content/tux.png",
+                "description": "COSMIC offers a modern and customizable user experience with an integrated tiling manager."
+            },
+            "lxqt": {
+                "image": "./content/tux.png",
+                "description": "LXQt is a lightweight and fast desktop environment."
+            },
+            "budgie": {
+                "image": "./content/tux.png",
+                "description": "Budgie is a modern and elegant desktop environment for Linux, focussing on minimalism, and user-friendliness."
+            },
+            "MATE": {
+                "image": "./content/tux.png",
+                "description": "MATE is a classic-style desktop environment for Linux, continuing the traditional look and feel of the GNOME 2 interface."
+            },
+            "deepin": {
+                "image": "./content/tux.png",
+                "description": "Deepin is a desktop environment providing a modern and polished look."
+            },
+            "pantheon": {
+                "image": "./content/tux.png",
+                "description": "Pantheon is a desktop environment that aims to be familiar to MacOS users."
+            },
+            "no desktop": {
+                "image": "./content/tux.png",
+                "description": "For those who want to install their own de/wm or use alloy on servers."
             }
         }
         self.slide_save_callback = None
