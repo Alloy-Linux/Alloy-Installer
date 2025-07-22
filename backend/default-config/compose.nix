@@ -36,11 +36,14 @@ in
   users.users.${username} = {
     isNormalUser = true;
     description = "";
-    password = "alloy";
+    hashedPassword = "";
     extraGroups = [ "networkmanager" "wheel" ]; # network + sudo access
     uid = 1000;
     shell = pkgs.bash;
+
   };
+
+  users.users.root.hashedPassword = "";
 
   # Enable zram swap and firewall
   services.zram-generator.enable = true;
