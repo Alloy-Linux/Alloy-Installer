@@ -1,9 +1,11 @@
 import gi
 gi.require_version('Gtk', '4.0')
-from gi.repository import Gtk
+from gi.repository import Gtk, GLib
 from slides import InstallerSlide
 import backend.data as data
 from ui.partitions.constants import PartitioningMode
+from backend.partitioning import start_partitioning
+from ui.install import install_slide
 
 def summary_slide(content_area, go_to_slide, app):
     title = Gtk.Label(label="Summary", css_classes=['title-1'])
@@ -52,9 +54,21 @@ def summary_slide(content_area, go_to_slide, app):
     
     back_btn = Gtk.Button(label="Back")
     back_btn.connect('clicked', lambda _: go_to_slide(InstallerSlide.DESKTOP))
+
+    started = {"value": False}
+    def on_install_clicked(_):
+        if not started["value"]:
+            started["value"] = True
+            go_to_slide(InstallerSlide.INSTALL)
+            install_slide.set_progress(0, "Installation starting")
+            install_slide.append_log("Installation starting...")
+            GLib.idle_add(start_partitioning)
+        else:
+            go_to_slide(InstallerSlide.INSTALL)
+
     
     next_btn = Gtk.Button(label="Install", css_classes=['suggested-action'])
-    next_btn.connect('clicked', lambda _: go_to_slide(InstallerSlide.INSTALL))
+    next_btn.connect('clicked', on_install_clicked)
     
     btn_box.append(back_btn)
     btn_box.append(next_btn)

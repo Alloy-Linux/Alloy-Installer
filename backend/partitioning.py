@@ -1,7 +1,7 @@
 import re
 import subprocess
 
-import data
+import backend.data as data
 from backend.make_config import create_config
 from ui.partitions.constants import PartitioningMode
 
@@ -17,8 +17,7 @@ def start_partitioning():
         data.username != "" and
         data.user_password != "" and
         data.root_password != "" and
-        data.desktop_environment != "" and
-        data.display_server != ""):
+        data.desktop_environment != ""):
 
         if data.partitioning_mode in [PartitioningMode.REPLACE_PARTITION, PartitioningMode.INSTALL_ALONGSIDE]:
             if data.selected_partition == "":

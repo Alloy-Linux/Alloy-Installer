@@ -93,5 +93,5 @@ def install_slide(content_area, go_to_slide, app):
     install_slide.append_log = append_log
 
 # Example use:
-    install_slide.set_progress(0.1, "progress bar message")
-    install_slide.append_log("text for log")
+#    install_slide.set_progress(0.1, "progress bar message")
+#    install_slide.append_log("text for log")
