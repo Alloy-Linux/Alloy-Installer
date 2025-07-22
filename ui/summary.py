@@ -55,7 +55,7 @@ def summary_slide(content_area, go_to_slide, app):
     back_btn.connect('clicked', lambda _: go_to_slide(InstallerSlide.DESKTOP))
     
     next_btn = Gtk.Button(label="Install", css_classes=['suggested-action'])
-    next_btn.connect('clicked', lambda _: print("Start installation..."))
+    next_btn.connect('clicked', lambda _: go_to_slide(InstallerSlide.INSTALL))
     
     btn_box.append(back_btn)
     btn_box.append(next_btn)

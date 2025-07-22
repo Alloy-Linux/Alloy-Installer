@@ -2,6 +2,7 @@
 
 pkgs.mkShell {
   buildInputs = with pkgs; [
+    python3Packages.pygobject3
     pkg-config
     cairo
     gtk4

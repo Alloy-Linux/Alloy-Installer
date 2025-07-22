@@ -18,6 +18,7 @@ from ui.partitions.partition_slide import partition_slide
 from gi.repository import Gtk, GLib, Gdk
 from ui.network import network_slide
 from ui.summary import summary_slide
+from ui.install import install_slide
 import backend.data
 
 
@@ -170,6 +171,8 @@ class AlloyInstaller(Gtk.Application):
                 desktop_slide(self.content_area, self._go_to_slide, self)
             case InstallerSlide.SUMMARY:
                 summary_slide(self.content_area, self._go_to_slide, self)
+            case InstallerSlide.INSTALL:
+               install_slide(self.content_area, self._go_to_slide, self)
             case _:
                 placeholder_slide(self.content_area, self.current_slide.name)
 
