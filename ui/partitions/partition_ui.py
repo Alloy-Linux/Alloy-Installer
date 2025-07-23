@@ -29,8 +29,13 @@ class PartitionUI:
         self.selected_partition_box = None
 
     def create_ui(self):
+        scrolled_window = Gtk.ScrolledWindow()
+        scrolled_window.set_policy(Gtk.PolicyType.NEVER, Gtk.PolicyType.AUTOMATIC)
+
         main_box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=20)
         main_box.set_css_classes(['installer-page'])
+        scrolled_window.set_child(main_box)
+
 
         title = Gtk.Label(label="Partitioning settings", css_classes=['title-1'])
         main_box.append(title)
@@ -196,10 +201,25 @@ class PartitionUI:
             "Use keyfile": "use_keyfile"
         }
 
+        tpm_password_label = Gtk.Label(label="TPM password:")
+        tpm_password_label.set_halign(Gtk.Align.START)
+        tpm_password_entry = Gtk.PasswordEntry()
+        tpm_password_entry.set_show_peek_icon(True)
+        tpm_password_entry.connect("changed", lambda entry: setattr(backend.data, 'tpm_password', entry.get_text()))
+        tpm_password_label.set_visible(False)
+        tpm_password_entry.set_visible(False)
+        encryption_options_box.append(tpm_password_label)
+        encryption_options_box.append(tpm_password_entry)
+
+
         def on_encryption_option_toggled(button, field_name):
             if button.get_active():
                 for name in radio_options.values():
                     setattr(backend.data, name, name == field_name)
+
+                show_tpm = field_name == "tpm"
+                tpm_password_label.set_visible(show_tpm)
+                tpm_password_entry.set_visible(show_tpm)
 
         group = None
         for label, field_name in radio_options.items():
@@ -244,7 +264,7 @@ class PartitionUI:
         btn_box.append(next_btn)
         main_box.append(btn_box)
 
-        return main_box
+        return scrolled_window
 
     def on_manual_partitioning_clicked(self, button):
         try:
