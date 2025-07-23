@@ -190,13 +190,27 @@ class PartitionUI:
         password_entry.connect("changed", lambda entry: setattr(backend.data, 'encryption_password', entry.get_text()))
         encryption_options_box.append(password_entry)
 
-        tpm_check = Gtk.CheckButton(label="Use TPM (Trusted Platform Module)")
-        tpm_check.connect("toggled", lambda btn: setattr(backend.data, 'tpm', btn.get_active()))
-        encryption_options_box.append(tpm_check)
+        radio_options = {
+            "Use a password": "use_password",
+            "Use TPM (Trusted Platform Module)": "tpm",
+            "Use keyfile": "use_keyfile"
+        }
 
-        keyfile_check = Gtk.CheckButton(label="Use keyfile instead of password")
-        keyfile_check.connect("toggled", lambda btn: setattr(backend.data, 'use_keyfile', btn.get_active()))
-        encryption_options_box.append(keyfile_check)
+        def on_encryption_option_toggled(button, field_name):
+            if button.get_active():
+                for name in radio_options.values():
+                    setattr(backend.data, name, name == field_name)
+
+        group = None
+        for label, field_name in radio_options.items():
+            btn = Gtk.CheckButton.new_with_label(label)
+            btn.set_group(group)
+            if group is None:
+                group = btn
+                btn.set_active(True)
+            btn.connect("toggled", on_encryption_option_toggled, field_name)
+            encryption_options_box.append(btn)
+
 
         def toggle_encryption_options(btn):
             enabled = btn.get_active()
