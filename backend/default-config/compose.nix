@@ -28,6 +28,10 @@ in
     ];
   };
 
+  environment.systemPackages = with pkgs; [ ];
+
+  security.tpm2.enable = false;
+
 
   # System version - don't change after initial install
   system.stateVersion = "25.05";
