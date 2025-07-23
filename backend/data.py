@@ -6,6 +6,9 @@ keyboard_layout: str = ""
 keyboard_variant: str = ""
 
 full_disk_encryption: bool = False
+encryption_password: str = ""
+tpm: bool = False
+use_keyfile: bool = False
 partitioning_mode: PartitioningMode = PartitioningMode.NONE
 selected_disk: str = ""
 selected_partition: str = ""

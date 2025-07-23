@@ -174,8 +174,36 @@ class PartitionUI:
 
         encryption_button = Gtk.CheckButton()
         encryption_button.connect("toggled", lambda btn: setattr(backend.data, 'full_disk_encryption', btn.get_active()))
-        encryption_button.set_label("Enable full-disk encryption?")
+        encryption_button.set_label("Enable LUKS encryption?")
         main_box.append(encryption_button)
+
+        encryption_options_box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=10)
+        encryption_options_box.set_margin_start(20)
+        main_box.append(encryption_options_box)
+
+        password_label = Gtk.Label(label="Encryption password:")
+        password_label.set_halign(Gtk.Align.START)
+        encryption_options_box.append(password_label)
+
+        password_entry = Gtk.PasswordEntry()
+        password_entry.set_show_peek_icon(True)
+        password_entry.connect("changed", lambda entry: setattr(backend.data, 'encryption_password', entry.get_text()))
+        encryption_options_box.append(password_entry)
+
+        tpm_check = Gtk.CheckButton(label="Use TPM (Trusted Platform Module)")
+        tpm_check.connect("toggled", lambda btn: setattr(backend.data, 'tpm', btn.get_active()))
+        encryption_options_box.append(tpm_check)
+
+        keyfile_check = Gtk.CheckButton(label="Use keyfile instead of password")
+        keyfile_check.connect("toggled", lambda btn: setattr(backend.data, 'use_keyfile', btn.get_active()))
+        encryption_options_box.append(keyfile_check)
+
+        def toggle_encryption_options(btn):
+            enabled = btn.get_active()
+            encryption_options_box.set_sensitive(enabled)
+
+        encryption_button.connect("toggled", toggle_encryption_options)
+        toggle_encryption_options(encryption_button)
 
         self.partition_display_area = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=10)
         self.partition_display_area.set_margin_start(10)
