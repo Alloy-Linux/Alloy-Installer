@@ -1,7 +1,9 @@
+import os
 import re
 import subprocess
 
-import backend.data as data
+import data
+from backend.luks import enable_luks
 from backend.make_config import create_config
 from ui.partitions.constants import PartitioningMode
 
@@ -129,5 +131,7 @@ def install_alloy():
     subprocess.run(["sudo", "mkdir", "-p", "/mnt/boot"], check=True)
     subprocess.run(["sudo", "mount", "/dev/" + data.boot_partition, "/mnt/boot"], check=True)
     subprocess.run(["sudo", "nixos-generate-config", "--root", "/mnt"], check=True)
+    enable_luks(data.selected_partition, data.encryption_password)
     create_config()
     subprocess.run(["sudo", "nixos-install"], check=True)
+

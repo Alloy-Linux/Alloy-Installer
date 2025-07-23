@@ -7,8 +7,9 @@ keyboard_variant: str = ""
 
 full_disk_encryption: bool = False
 encryption_password: str = ""
+sopin: str = ""
 tpm: bool = False
-use_keyfile: bool = False
+keyfile: bool = False
 partitioning_mode: PartitioningMode = PartitioningMode.NONE
 selected_disk: str = ""
 selected_partition: str = ""
