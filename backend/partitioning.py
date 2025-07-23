@@ -2,7 +2,7 @@ import os
 import re
 import subprocess
 
-import data
+import backend.data as data
 from backend.luks import enable_luks
 from backend.make_config import create_config
 from ui.partitions.constants import PartitioningMode
