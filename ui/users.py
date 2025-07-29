@@ -117,6 +117,11 @@ def users_slide(content_area, go_to_slide, app):
     root_match_label.set_halign(Gtk.Align.START)
     main_box.append(root_match_label)
 
+    error_label = Gtk.Label(label="")
+    error_label.set_halign(Gtk.Align.START)
+    error_label.add_css_class('error')
+    main_box.append(error_label)
+
     def on_root_password_changed(_):
         p1 = root_pw_entry.get_text()
         p2 = root_confirm_entry.get_text()
@@ -184,22 +189,43 @@ def users_slide(content_area, go_to_slide, app):
     app.slide_save_callback = save_data
 
     def on_continue(_):
-        p1 = password_entry.get_text()
-        p2 = confirm_entry.get_text()
-        p3 = root_pw_entry.get_text()
-        p4 = root_confirm_entry.get_text()
-        if p1 == p2 and p3 == p4:
-            app.hostname = hostname_entry.get_text()
-            app.username = username_entry.get_text()
-            app.user_password = password_entry.get_text()
-            app.root_password = root_pw_entry.get_text()
-            data.hostname = hostname_entry.get_text()
-            data.username = username_entry.get_text()
-            data.user_password = password_entry.get_text()
-            data.root_password = root_pw_entry.get_text()
-            go_to_slide(InstallerSlide.DESKTOP)
-        else:
+        hostname = hostname_entry.get_text().strip()
+        username = username_entry.get_text().strip()
+        user_pw = password_entry.get_text()
+        user_pw_confirm = confirm_entry.get_text()
+        root_pw = root_pw_entry.get_text()
+        root_pw_confirm = root_confirm_entry.get_text()
+
+        if not hostname or not username or not user_pw or not user_pw_confirm:
+            error_label.set_text("Fill in all fields.")
             return
+
+        if not same_pw_check.get_active():
+            if not root_pw or not root_pw_confirm:
+                error_label.set_text("Fill in all fields.")
+                return
+        if root_pw != root_pw_confirm:
+            error_label.set_text("Root passwords do not match.")
+            return
+        else:
+            root_pw = user_pw
+            root_pw_confirm = user_pw_confirm
+
+        if user_pw != user_pw_confirm:
+            error_label.set_text("User passwords do not match.")
+            return
+
+        error_label.set_text("")
+        app.hostname = hostname
+        app.username = username
+        app.user_password = user_pw
+        app.root_password = root_pw
+        data.hostname = hostname
+        data.username = username
+        data.user_password = user_pw
+        data.root_password = root_pw
+
+        go_to_slide(InstallerSlide.DESKTOP)
 
     next_btn = Gtk.Button(label="Continue", css_classes=['suggested-action'])
     next_btn.connect('clicked', on_continue)
