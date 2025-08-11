@@ -42,7 +42,10 @@ def start_partitioning():
 def replace_partition(partition_name: str):
     partition_path = f"/dev/{partition_name}"
 
-    subprocess.run(["sudo", "umount", partition_path], check=True)
+    try:
+        subprocess.run(["sudo", "umount", partition_path], check=True)
+    except subprocess.CalledProcessError:
+        print(f"Failed to unmount {partition_path}.")
     subprocess.run(["sudo", "mkfs.ext4", "-F", partition_path], check=True)
     data.root_partition = partition_name
 

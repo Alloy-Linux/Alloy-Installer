@@ -463,7 +463,7 @@ class PartitionUI:
                     click_controller = Gtk.GestureClick()
                     legend_entry_box.add_controller(click_controller)
 
-                    def on_partition_click(p=part):
+                    def on_partition_click(gesture, n_press, x, y, p=part):
                         part_size_bytes = int(p.get("size", 0))
                         self.on_partition_selected(p.get("name"), part_size_bytes)
 
