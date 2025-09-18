@@ -58,53 +58,53 @@ class AlloyInstaller(Gtk.Application):
 
         self.selected_desktop = None
 
-        self.desktop_environments = ["gnome", "kde", "xfce", "cinnamon", "cosmic", "lxqt", "budgie", "MATE", "deepin", "pantheon", "no desktop"]
+        self.desktop_environments = ["Gnome", "KDE Plasma", "XFCE", "Cinnamon", "Cosmic", "LXQT", "Budgie", "MATE", "Deepin", "Pantheon", "No Desktop (tty)"]
 
         self.selected_desktop = False
 
         self.desktop_info = {
-            "gnome": {
-                "image": "./content/tux.png",
+            "Gnome": {
+                "image": "./content/gnome.svg",
                 "description": "GNOME offers a modern, simple, and distraction-free desktop. Great for newcomers and minimalists."
             },
-            "kde": {
-                "image": "./content/tux.png",
+            "KDE Plasma": {
+                "image": "./content/kde.svg",
                 "description": "KDE Plasma is a powerful, highly customizable desktop with advanced features and effects."
             },
-            "xfce": {
-                "image": "./content/tux.png",
+            "XFCE": {
+                "image": "./content/xfce.svg",
                 "description": "XFCE is lightweight and fast, ideal for older systems or users who prefer performance over visuals."
             },
-            "cinnamon": {
-                "image": "./content/tux.png",
+            "Cinnamon": {
+                "image": "./content/cinnamon.svg",
                 "description": "Cinnamon provides a traditional desktop layout. User-friendly and stable."
             },
-            "cosmic": {
-                "image": "./content/tux.png",
+            "Cosmic": {
+                "image": "./content/cosmic.svg",
                 "description": "COSMIC offers a modern and customizable user experience with an integrated tiling manager."
             },
-            "lxqt": {
-                "image": "./content/tux.png",
+            "LXQT": {
+                "image": "./content/lxqt.svg",
                 "description": "LXQt is a lightweight and fast desktop environment."
             },
-            "budgie": {
-                "image": "./content/tux.png",
+            "Budgie": {
+                "image": "./content/budgie.svg",
                 "description": "Budgie is a modern and elegant desktop environment for Linux, focussing on minimalism, and user-friendliness."
             },
             "MATE": {
-                "image": "./content/tux.png",
+                "image": "./content/mate.svg",
                 "description": "MATE is a classic-style desktop environment for Linux, continuing the traditional look and feel of the GNOME 2 interface."
             },
-            "deepin": {
-                "image": "./content/tux.png",
+            "Deepin": {
+                "image": "./content/deepin.svg",
                 "description": "Deepin is a desktop environment providing a modern and polished look."
             },
-            "pantheon": {
-                "image": "./content/tux.png",
+            "Pantheon": {
+                "image": "./content/pantheon.svg",
                 "description": "Pantheon is a desktop environment that aims to be familiar to MacOS users."
             },
-            "no desktop": {
-                "image": "./content/tux.png",
+            "No Desktop (tty)": {
+                "image": "./content/tux.svg",
                 "description": "For those who want to install their own de/wm or use alloy on servers."
             }
         }

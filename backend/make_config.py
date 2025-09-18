@@ -35,7 +35,7 @@ def create_config():
             to_remove = []
 
     for de in to_remove:
-        subprocess.run(["sudo", "rm", "-f", f"default-config/profile/workstation/{de}.nix"], check=True)
+        subprocess.run(["sudo", "-rm", f"default-config/profile/workstation/{de}.nix"], check=True)
 
     update_desktop_import_path(data.desktop_environment.lower())
     update_location(data.location)

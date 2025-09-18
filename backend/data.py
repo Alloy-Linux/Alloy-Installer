@@ -21,6 +21,7 @@ user_password: str = ""
 root_password: str = ""
 
 desktop_environment: str = ""
+display_server: str = ""
 
 root_partition: str = ""
 boot_partition: str = ""

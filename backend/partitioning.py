@@ -23,7 +23,7 @@ def start_partitioning():
 
         if data.partitioning_mode in [PartitioningMode.REPLACE_PARTITION, PartitioningMode.INSTALL_ALONGSIDE]:
             if data.selected_partition == "":
-                print("Selected partition not filled in for this mode!")
+                print("ERR: Selected partition not filled in for this mode!")
                 return
 
         match data.partitioning_mode:
@@ -37,7 +37,7 @@ def start_partitioning():
                 erase_disk(data.selected_disk)
                 install_alloy()
     else:
-        print("Not all required settings were filled in!")
+        print("ERR: Not all required settings were filled in!")
 
 def replace_partition(partition_name: str):
     partition_path = f"/dev/{partition_name}"
@@ -45,13 +45,13 @@ def replace_partition(partition_name: str):
     try:
         subprocess.run(["sudo", "umount", partition_path], check=True)
     except subprocess.CalledProcessError:
-        print(f"Failed to unmount {partition_path}.")
+        print(f"ERR: Failed to unmount {partition_path}.")
     subprocess.run(["sudo", "mkfs.ext4", "-F", partition_path], check=True)
     data.root_partition = partition_name
 
     disk_path_match = re.match(r"^(/dev/[a-z]+|/dev/nvme\d+n\d+)", partition_path)
     if not disk_path_match:
-        raise ValueError(f"Invalid disk path derived from: {partition_path}")
+        raise ValueError(f"ERR: Invalid disk path derived from: {partition_path}")
     base_disk_path = disk_path_match.group(1)
     base_disk_name = base_disk_path.replace("/dev/", "")
 
@@ -65,7 +65,7 @@ def install_alongside(partition_name: str, new_partition_size: int):
 
     part_num_match = re.search(r'(\d+)$', partition_name)
     if not part_num_match:
-        raise ValueError(f"Invalid partition name: {partition_name}")
+        raise ValueError(f"ERR: Invalid partition name: {partition_name}")
     part_num = part_num_match.group(1)
 
     subprocess.run([
@@ -75,7 +75,7 @@ def install_alongside(partition_name: str, new_partition_size: int):
 
     disk_path_match = re.match(r"^(/dev/[a-z]+|/dev/nvme\d+n\d+)", partition_path)
     if not disk_path_match:
-        raise ValueError(f"Invalid disk path: {partition_path}")
+        raise ValueError(f"ERR: Invalid disk path: {partition_path}")
     base_disk_path = disk_path_match.group(1)
     base_disk_name = base_disk_path.replace("/dev/", "")
     data.boot_partition = create_partition(base_disk_path, boot_partition_size, "fat32")
@@ -101,8 +101,8 @@ def create_boot_partition(partition_name: str):
     partition_path = f"/dev/{partition_name}"
     subprocess.run(["sudo", "mkfs.fat", "-F", "32", partition_path], check=True)
     match = re.match(r'^(/dev/(?:sd[a-z]+|nvme\d+n\d+))(p?\d+)$', partition_path)
-    base_disk = match.group(1)
-    partition_number = match.group(2)
+    base_disk = match.group(1) # type: ignore
+    partition_number = match.group(2) # type: ignore
     if partition_number.startswith('p'):
         partition_number = partition_number[1:]
     subprocess.run(["sudo", "parted", "-s", base_disk, "set", partition_number, "boot", "on"], check=True)
@@ -129,6 +129,12 @@ def create_partition(disk: str, size_mib: int | None, fs_type: str) -> str:
     partition_name = [p for p in parts if p != disk.replace("/dev/", "")][-1]
     return partition_name
 
+def edit_config():
+    print("DEBUG: running edit_config, ping pong")
+
+    
+
+    print("DEBUG: finishing edit_config, pong ping")
 def install_alloy():
     subprocess.run(["sudo", "mount", "/dev/" + data.root_partition, "/mnt"], check=True)
     subprocess.run(["sudo", "mkdir", "-p", "/mnt/boot"], check=True)
