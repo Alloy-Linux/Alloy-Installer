@@ -1,5 +1,6 @@
 import gi
 import backend.data as data
+import re
 
 gi.require_version('Gtk', '4.0')
 from gi.repository import Gtk
@@ -198,6 +199,20 @@ def users_slide(content_area, go_to_slide, app):
 
         if not hostname or not username or not user_pw or not user_pw_confirm:
             error_label.set_text("Fill in all fields.")
+            return
+
+        allowed_chars = re.compile(r'^[A-Za-z0-9.-]+$')
+
+        if not allowed_chars.match(hostname):
+            error_label.set_text("Hostname contains invalid characters.")
+            return
+
+        if hostname.startswith('-') or hostname.endswith('-'):
+            error_label.set_text("Hostname cannot start or end with a hyphen.")
+            return
+
+        if hostname.startswith('.') or hostname.endswith('.'):
+            error_label.set_text("Hostname cannot start or end with a full stop.")
             return
 
         if not same_pw_check.get_active():
