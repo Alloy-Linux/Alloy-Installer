@@ -8,11 +8,19 @@ from slides import InstallerSlide
 
 
 def has_internet(timeout=3):
-    try:
-        urllib.request.urlopen('https://www.google.com', timeout=timeout)
-        return True
-    except urllib.error.URLError:
-        return False
+    urls = [
+        'https://nmcheck.gnome.org',
+        'https://wikipedia.org',
+        'https://example.com'
+    ]
+
+    for url in urls:
+        try:
+            with urllib.request.urlopen(url, timeout=timeout):
+                return True
+        except urllib.error.URLError:
+            continue
+    return False
 
 def create_network_widget(network, on_network_click):
     row_box = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=12)
@@ -369,7 +377,6 @@ def network_slide(content_area, go_to_slide):
         update_network_list()
         return True
 
-    update_internet_status()
     GLib.timeout_add_seconds(5, update_internet_status)
 
     btn_box = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=10)
@@ -389,62 +396,48 @@ def network_slide(content_area, go_to_slide):
 
 
 def get_nearby_networks():
-    try:
-        result = subprocess.run(
-            "nmcli -t -f IN-USE,SSID,SIGNAL,SECURITY device wifi list",
-            capture_output=True, text=True, shell=True, check=True
-        )
+    result_container = {}
 
-        output_lines = result.stdout.strip().split('\n')
+    def get_nearby_networks_thread():
+        try:
+            result = subprocess.run(
+                "nmcli -t -f IN-USE,SSID,SIGNAL,SECURITY device wifi list",
+                capture_output=True, text=True, shell=True, check=True
+            )
 
-        networks = {}
-        for line in output_lines:
-            parts = line.strip().split(':', 3)
-            if len(parts) >= 4:
-                network = {
-                    "in_use": parts[0] == '*',
-                    "ssid": parts[1] or "Hidden Network",
-                    "signal": int(parts[2]) if parts[2] else 0,
-                    "security": parts[3] if parts[3] else "None"
-                }
+            output_lines = result.stdout.strip().split('\n')
 
-                ssid = network["ssid"]
+            networks = {}
+            for line in output_lines:
+                parts = line.strip().split(':', 3)
+                if len(parts) >= 4:
+                    network = {
+                        "in_use": parts[0] == '*',
+                        "ssid": parts[1] or "Hidden Network",
+                        "signal": int(parts[2]) if parts[2] else 0,
+                        "security": parts[3] if parts[3] else "None"
+                    }
 
-                if ssid not in networks:
-                    networks[ssid] = network
-                else:
-                    existing = networks[ssid]
-                    if network["in_use"]:
+                    ssid = network["ssid"]
+
+                    if ssid not in networks:
                         networks[ssid] = network
-                    elif existing["in_use"]:
-                        pass
                     else:
-                        if network["signal"] > existing["signal"]:
+                        existing = networks[ssid]
+                        if network["in_use"]:
                             networks[ssid] = network
+                        elif existing["in_use"]:
+                            pass
+                        else:
+                            if network["signal"] > existing["signal"]:
+                                networks[ssid] = network
 
-        return list(networks.values())
-    except Exception:
-        return []
+            result_container['networks'] = list(networks.values())
+        except Exception:
+            result_container['networks'] = []
 
+    thread = threading.Thread(target=get_nearby_networks_thread)
+    thread.start()
+    thread.join()
 
-def get_placeholder_networks():
-    return [
-        {
-            "in_use": False,
-            "ssid": "Network 1",
-            "signal": 69,
-            "security": "WPA2"
-        },
-        {
-            "in_use": False,
-            "ssid": "Network 2",
-            "signal": 50,
-            "security": "None"
-        },
-        {
-            "in_use": True,
-            "ssid": "Network 3",
-            "signal": 21,
-            "security": "WPA"
-        }
-    ]
+    return result_container['networks']
